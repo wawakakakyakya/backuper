@@ -10,7 +10,7 @@ import (
 
 //ローカルファイルのローテーター
 type localRotator struct {
-	baseRotator
+	*baseRotator
 	config *config.Config
 	logger logger.LoggerInterface
 }
@@ -37,6 +37,6 @@ func (l *localRotator) _find() ([]string, error) {
 }
 
 func newLocalRotator(config *config.Config, logger logger.LoggerInterface) rotatorInterface {
-	bRotator := baseRotator{config: config, logger: logger}
-	return &localRotator{baseRotator: bRotator, config: config, logger: logger}
+	br := newBaseRotator(config, logger)
+	return &localRotator{baseRotator: br, config: config, logger: logger}
 }

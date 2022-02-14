@@ -53,6 +53,10 @@ func (b *baseRotator) _run(ar actRotator) error {
 	return nil
 }
 
+func newBaseRotator(config *config.Config, logger logger.LoggerInterface) *baseRotator {
+	return &baseRotator{config: config, logger: logger}
+}
+
 func NewRotator(config *config.Config, logger logger.LoggerInterface) rotatorInterface {
 	return newLocalRotator(config, logger)
 }
