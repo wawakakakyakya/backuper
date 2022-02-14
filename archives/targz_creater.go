@@ -26,7 +26,7 @@ func NewTar(buf *bytes.Buffer, today string, config *config.Config, logger logge
 }
 
 func (t *Tar) Create() error {
-	fName := fmt.Sprintf("%s.%s.tgz", filepath.Join(t.config.Dest, filepath.Base(t.config.Dest)), t.today)
+	fName := fmt.Sprintf("%s.%s.tgz", filepath.Join(t.config.Dest, filepath.Base(t.config.Src)), t.today)
 	fWriter, err := os.OpenFile(fName, os.O_CREATE|os.O_RDWR, os.FileMode(0644))
 	if err != nil {
 		t.logger.ErrorS("file open error")
