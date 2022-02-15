@@ -6,6 +6,7 @@ import (
 	"backuper/logger"
 	"backuper/rotator"
 	"bytes"
+	"fmt"
 	"os"
 	"time"
 )
@@ -44,7 +45,12 @@ func main() {
 	// flag.Parse()
 	logger := logger.NewLogger()
 	logger.Info("start main")
-	config := config.NewConfig()
+	config, err := config.NewConfig()
+	fmt.Printf("(%%v)  %v\n", config)
+	if err != nil {
+		logger.ErrorS("get config failed")
+		exitWithError(logger, err)
+	}
 	rotator := rotator.NewRotator(config, logger)
 	// fmt.Printf("exclude: %v\n", libs.Args.Excludes)
 	// fmt.Printf("src: %v\n", libs.Args.Src)

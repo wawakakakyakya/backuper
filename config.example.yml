@@ -1,0 +1,7 @@
+excludes:
+  - /root/default/file1.txt
+  - /root/default/dir2
+src: ./
+dest: ./
+rotate: 5
+is_recursive: true
