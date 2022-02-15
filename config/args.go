@@ -6,28 +6,6 @@ import (
 	"path/filepath"
 )
 
-type AbsPath string
-
-func (ap *AbsPath) String() string {
-	return ""
-}
-
-func (ap *AbsPath) Set(v string) error {
-	// p, err := filepath.Abs(string(*ap))
-	p, err := filepath.Abs(v)
-	fmt.Println("abs path: ", p)
-	if err != nil {
-		fmt.Println("get file Abs path error")
-		return err
-	}
-	*ap = AbsPath(p)
-	return nil
-}
-
-// func (ap *AbsPath) IsSubDir(v string) error {
-// 	filepath.Rel()
-// }
-
 type ArrayFlags []string
 
 func (i *ArrayFlags) String() string {
@@ -51,12 +29,11 @@ var args Config
 
 func init() {
 	fmt.Println("start libs.args.init")
-	flag.IntVar(&args.MaxLength, "length", 24, "string lentgh")
-	flag.Var((*AbsPath)(&args.Src), "src", "/root/default")
-	flag.Var((*AbsPath)(&args.Dest), "dest", "/root/default")
-	flag.Var((*ArrayFlags)(&args.Excludes), "exclude", "Some description for this param.")
-	flag.IntVar(&args.Rotate, "rotate", 5, "rotate backup file")
-	flag.BoolVar(&args.IsRecursive, "recursive", true, "backup subdir")
+	flag.StringVar(&args.Src, "src", "", "default ./")
+	flag.StringVar(&args.Dest, "dest", "", "default ./")
+	flag.Var((*ArrayFlags)(args.Excludes), "exclude", "Some description for this param.")
+	flag.IntVar(&args.Rotate, "rotate", 0, "rotate backup file (default 5)")
+	flag.StringVar(&args.IsRecursive, "recursive", "", "true or false (default true)")
 	flag.Parse()
 
 	fmt.Println("libs.args.init")
