@@ -19,8 +19,9 @@ type YamlConfig struct {
 func LoadYamlConfig(path string) (*Config, error) {
 	f, err := ioutil.ReadFile(path)
 	var yc *YamlConfig
+	// if no config , return default
 	if err != nil {
-		return nil, err
+		return &Config{}, nil
 	}
 
 	err = yaml.Unmarshal(f, &yc)
