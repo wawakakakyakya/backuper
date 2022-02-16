@@ -3,6 +3,7 @@ package logger
 import "fmt"
 
 type StdOutLogger struct {
+	actWriter
 	BaseLogger // call xxx instead of BaseLogger.xxx
 }
 
