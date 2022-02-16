@@ -16,6 +16,9 @@ func (b *baseRotator) remove(files []string, ar actRotator) error {
 	if len(files) <= b.config.Rotate {
 		b.logger.Info("No rotation target found")
 		return nil
+	} else if b.config.Rotate == -1 {
+		b.logger.Info("Rotation was canceled by config")
+		return nil
 	}
 
 	for i, f := range files {
