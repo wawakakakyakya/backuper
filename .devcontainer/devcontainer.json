@@ -1,0 +1,22 @@
+{
+    "name": "backuper",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "backuper",
+    "extensions": [
+        "golang.Go",
+        "ms-ceintl.vscode-language-pack-ja",
+        "editorconfig.editorconfig",
+        "waderyan.gitblame",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "oderwat.indent-rainbow",
+        "vscode-icons-team.vscode-icons",
+        "mosapride.zenkaku",
+        "janisdd.vscode-edit-csv"
+    ],
+    "shutdownAction": "stopCompose",
+    "workspaceFolder": "/app"
+}

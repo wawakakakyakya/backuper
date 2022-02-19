@@ -1,8 +1,21 @@
 package config
 
 import (
+	"fmt"
 	"path/filepath"
 )
+
+var GlobalConfig *Config
+
+func ReloadConfig() error {
+	c, err := NewConfig()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("config: \n", c)
+	GlobalConfig = c
+	return nil
+}
 
 type Config struct {
 	Excludes    ArrayFlags
@@ -64,5 +77,6 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return joinC, err
+	GlobalConfig = joinC
+	return GlobalConfig, err
 }

@@ -1,4 +1,4 @@
-package main
+package task
 
 import (
 	"backuper/archives"
@@ -9,11 +9,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-)
-
-var (
-	OK = 0
-	NG = 1
 )
 
 func getDate() (string, error) {
@@ -36,22 +31,12 @@ func makeDestDir(config *config.Config) error {
 	return nil
 }
 
-func exitWithError(logger logger.LoggerInterface, err error) {
-	logger.Error(err)
-	os.Exit(NG)
-}
-
-func main() {
+func run(c *config.Config, l logger.LoggerInterface) error {
 	// flag.Parse()
 	logger := logger.NewLogger()
 	logger.Info("start main")
-	config, err := config.NewConfig()
-	fmt.Printf("(%%v)  %v\n", config)
-	if err != nil {
-		logger.ErrorS("get config failed")
-		exitWithError(logger, err)
-	}
-	rotator := rotator.NewRotator(config, logger)
+	fmt.Printf("(%%v)  %v\n", c)
+	rotator := rotator.NewRotator(c, logger)
 	// fmt.Printf("exclude: %v\n", libs.Args.Excludes)
 	// fmt.Printf("src: %v\n", libs.Args.Src)
 	// fmt.Printf("dest: %v\n", libs.Args.Dest)
@@ -59,29 +44,29 @@ func main() {
 	today, err := getDate()
 	if err != nil {
 		logger.ErrorS("get date error")
-		exitWithError(logger, err)
+		return err
 	}
-	_, sErr := os.Stat(config.Src)
+	_, sErr := os.Stat(c.Src)
 	if os.IsNotExist(sErr) {
 		logger.ErrorS("src does not exist")
-		exitWithError(logger, sErr)
+		return err
 	}
 
-	if err = makeDestDir(config); err != nil {
-		exitWithError(logger, err)
+	if err = makeDestDir(c); err != nil {
+		return err
 	}
 	//fmt.Printf("src: %p", &libs.Args.Src)
 	buf := new(bytes.Buffer)
-	tar := archives.NewTar(buf, today, config, logger)
+	tar := archives.NewTar(buf, today, c, logger)
 	if err := tar.Add(buf); err != nil {
-		exitWithError(logger, err)
+		return err
 	}
 
 	if err := tar.Create(); err != nil {
-		exitWithError(logger, err)
+		return err
 	}
 	// act.Run -> base._run(act) -> base.find(act) -> act._find
 	// act.Run -> base._runのときにactを渡すことでinterfaceを満たしている
 	rotator.Run()
-	os.Exit(OK)
+	return nil
 }

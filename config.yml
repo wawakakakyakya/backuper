@@ -1,0 +1,4 @@
+rotate: 1
+is_recursive: false
+exclude:
+  - /root/default
