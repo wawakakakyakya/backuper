@@ -12,6 +12,7 @@ type YamlConfig struct {
 	Dest        string     `yaml: "dest"`
 	Rotate      int        `yaml: "rotate"`
 	IsRecursive string     `yaml: "is_recursive"`
+	IsDaemon    string     `yaml: "is_daemon"`
 }
 
 // var c := Config{Exclude: "", Src: "", Dest: "", Rotate: "", IsRecursive: ""}
@@ -19,8 +20,9 @@ type YamlConfig struct {
 func LoadYamlConfig(path string) (*Config, error) {
 	f, err := ioutil.ReadFile(path)
 	var yc *YamlConfig
+	// if no config , return default
 	if err != nil {
-		return nil, err
+		return &Config{}, nil
 	}
 
 	err = yaml.Unmarshal(f, &yc)
@@ -29,11 +31,12 @@ func LoadYamlConfig(path string) (*Config, error) {
 	}
 	// fmt.Printf("(%%v)  %v\n", c)
 	c := &Config{}
-	c.Excludes = &yc.Excludes
+	c.Excludes = yc.Excludes
 	c.Dest = yc.Dest
 	c.Src = yc.Src
 	c.Rotate = yc.Rotate
 	c.IsRecursive = yc.IsRecursive
+	c.IsDaemon = yc.IsDaemon
 
 	return c, nil
 }

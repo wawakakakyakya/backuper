@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  backuper:
+    image: golang/alpine/self
+    container_name: backuper
+    restart: always
+    hostname: backuper
+    volumes:
+      - ./:/app/go/src/backuper

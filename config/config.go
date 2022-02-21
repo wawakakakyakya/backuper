@@ -1,13 +1,29 @@
 package config
 
-import "path/filepath"
+import (
+	"fmt"
+	"path/filepath"
+)
+
+var GlobalConfig *Config
+
+func ReloadConfig() error {
+	c, err := NewConfig()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("config: \n", c)
+	GlobalConfig = c
+	return nil
+}
 
 type Config struct {
-	Excludes    *ArrayFlags
+	Excludes    ArrayFlags
 	Src         string
 	Dest        string
 	Rotate      int
 	IsRecursive string //if bool, can't judg user input, because bool init to false
+	IsDaemon    string
 }
 
 //convert config
@@ -28,7 +44,6 @@ func mutate(config *Config) error {
 func join(argC *Config, yamlC *Config) (*Config, error) {
 	var ar [2]*Config = [2]*Config{yamlC, argC} // overwrite yaml by arg
 	joinC := newDefaultConfig()
-
 	for _, c := range ar {
 		if c.Dest != "" {
 			joinC.Dest = c.Dest
@@ -38,8 +53,10 @@ func join(argC *Config, yamlC *Config) (*Config, error) {
 			joinC.Rotate = c.Rotate
 		} else if c.IsRecursive != "" {
 			joinC.IsRecursive = c.IsRecursive
-		} else if len(*c.Excludes) != 0 {
+		} else if len(c.Excludes) != 0 {
 			joinC.Excludes = c.Excludes
+		} else if c.IsDaemon != "" {
+			joinC.IsDaemon = c.IsDaemon
 		}
 	}
 
@@ -60,5 +77,6 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return joinC, err
+	GlobalConfig = joinC
+	return GlobalConfig, err
 }
