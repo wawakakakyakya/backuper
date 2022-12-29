@@ -1,5 +1,5 @@
 package config
 
 func newDefaultConfig() *Config {
-	return &Config{Src: "./", Dest: "./", Rotate: 5, IsRecursive: "true"}
+	return &Config{Src: "./", Dest: "./", Rotate: 5, IsRecursive: true}
 }

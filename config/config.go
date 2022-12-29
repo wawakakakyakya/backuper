@@ -2,12 +2,15 @@ package config
 
 import "path/filepath"
 
+type ConfigArray []*Config
+
 type Config struct {
-	Excludes    *ArrayFlags
+	// Excludes    *ArrayFlags
+	Excludes    []string
 	Src         string
 	Dest        string
 	Rotate      int
-	IsRecursive string //if bool, can't judg user input, because bool init to false
+	IsRecursive bool //if bool, can't judg user input, because bool init to false
 }
 
 //convert config
@@ -25,40 +28,17 @@ func mutate(config *Config) error {
 	return nil
 }
 
-func join(argC *Config, yamlC *Config) (*Config, error) {
-	var ar [2]*Config = [2]*Config{yamlC, argC} // overwrite yaml by arg
-	joinC := newDefaultConfig()
+func NewConfig() (ConfigArray, error) {
+	cfgAr, err := LoadYamlConfig(configPath)
+	if err != nil {
+		return nil, err
+	}
 
-	for _, c := range ar {
-		if c.Dest != "" {
-			joinC.Dest = c.Dest
-		} else if c.Src != "" {
-			joinC.Src = c.Src
-		} else if c.Rotate != 0 {
-			joinC.Rotate = c.Rotate
-		} else if c.IsRecursive != "" {
-			joinC.IsRecursive = c.IsRecursive
-		} else if len(*c.Excludes) != 0 {
-			joinC.Excludes = c.Excludes
+	for _, c := range cfgAr {
+		if err := mutate(c); err != nil {
+			return nil, err
 		}
 	}
 
-	if err := mutate(joinC); err != nil {
-		return nil, err
-	}
-
-	return joinC, nil
-}
-
-func NewConfig() (*Config, error) {
-	yamlC, err := LoadYamlConfig("./config.yml")
-	if err != nil {
-		return nil, err
-	}
-	argC := &args
-	joinC, err := join(argC, yamlC)
-	if err != nil {
-		return nil, err
-	}
-	return joinC, err
+	return cfgAr, nil
 }

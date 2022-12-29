@@ -1,7 +1,8 @@
-excludes:
-  - /root/default/file1.txt
-  - /root/default/dir2
-src: ./
-dest: ./
-rotate: 5
-is_recursive: true
+lists:
+  - excludes:
+    - /root/default/file1.txt
+    - /root/default/dir2
+    src: ./
+    dest: /tmp/hoge
+    rotate: 5
+    is_recursive: true
