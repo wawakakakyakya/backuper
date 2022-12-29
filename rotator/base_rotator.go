@@ -41,6 +41,10 @@ func (b *baseRotator) find(ar actRotator) ([]string, error) {
 func (b *baseRotator) _run(ar actRotator) error {
 	b.logger.Info("start base rotator _run")
 	// pdir := filepath.Dir(r.config.Dest)
+	if b.config.Rotate == -1 {
+		b.logger.Info("rorate was canceled")
+		return nil
+	}
 	files, err := b.find(ar)
 	if err != nil {
 		b.logger.ErrorS("find rotate file faied")
@@ -56,6 +60,13 @@ func newBaseRotator(config *config.Config, logger logger.LoggerInterface) *baseR
 	return &baseRotator{config: config, logger: logger}
 }
 
-func NewRotator(config *config.Config, logger logger.LoggerInterface) rotatorInterface {
-	return newLocalRotator(config, logger)
+func NewRotator(c *config.Config, logger logger.LoggerInterface) rotatorInterface {
+	switch c.Env {
+	case "local":
+		return newLocalRotator(c, logger)
+	case "google":
+		return newGoogleRotator(c, logger)
+	default:
+		return newLocalRotator(c, logger)
+	}
 }

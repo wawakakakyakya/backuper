@@ -4,5 +4,6 @@ lists:
     - /root/default/dir2
     src: ./
     dest: /tmp/hoge
+    env: local
     rotate: 5
     is_recursive: true
