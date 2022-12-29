@@ -47,7 +47,6 @@ func (b *baseRotator) _run(ar actRotator) error {
 		return err
 	}
 	b.logger.Info(fmt.Sprintf("rotation files: %s", files))
-	fmt.Println("rotation targets: ", files)
 	b.remove(files, ar)
 
 	return nil
