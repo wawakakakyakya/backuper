@@ -9,6 +9,8 @@ import (
 )
 
 //ローカルファイルのローテーター
+//ロガーは親で持つので持たせない
+// Todo: Remove Logger
 type localRotator struct {
 	*baseRotator
 	config *config.Config
@@ -24,7 +26,7 @@ func (l *localRotator) Run() error {
 func (l *localRotator) _remove(fpath string) error {
 	l.logger.Info("call base find")
 	err := os.Remove(fpath)
-	fmt.Println(fpath, " was deleted")
+	// l.logger.Info(fmt.Sprintf("%s was deleted", fpath))
 	return err
 }
 
