@@ -9,6 +9,7 @@ type Config struct {
 	Excludes    []string
 	Src         string
 	Dest        string
+	Env         string
 	Rotate      int
 	IsRecursive bool //if bool, can't judg user input, because bool init to false
 }

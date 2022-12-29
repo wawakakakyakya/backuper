@@ -60,6 +60,13 @@ func newBaseRotator(config *config.Config, logger logger.LoggerInterface) *baseR
 	return &baseRotator{config: config, logger: logger}
 }
 
-func NewRotator(config *config.Config, logger logger.LoggerInterface) rotatorInterface {
-	return newLocalRotator(config, logger)
+func NewRotator(c *config.Config, logger logger.LoggerInterface) rotatorInterface {
+	switch c.Env {
+	case "local":
+		return newLocalRotator(c, logger)
+	case "google":
+		return newGoogleRotator(c, logger)
+	default:
+		return newLocalRotator(c, logger)
+	}
 }

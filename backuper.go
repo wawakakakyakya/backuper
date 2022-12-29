@@ -25,7 +25,7 @@ func getDate() (string, error) {
 		return "", err
 	}
 	nowJST := time.Now().In(jst)
-	return nowJST.Format("2006-01-02_03-04-05"), nil
+	return nowJST.Format("20060102-030405"), nil
 }
 
 func makeDestDir(config *config.Config) error {

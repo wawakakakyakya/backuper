@@ -12,6 +12,7 @@ type YamlConfig struct {
 	Excludes    []string `yaml:"excludes"`
 	Src         string   `yaml:"src"`
 	Dest        string   `yaml:"dest"`
+	Env         string   `yaml:"env"`
 	Rotate      int      `yaml:"rotate"`
 	IsRecursive bool     `yaml:"is_recursive"`
 }
