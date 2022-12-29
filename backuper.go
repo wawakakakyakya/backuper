@@ -43,46 +43,42 @@ func exitWithError(logger logger.LoggerInterface, err error) {
 }
 
 func main() {
-	// flag.Parse()
 	logger := logger.NewLogger()
 	logger.Info("start main")
-	config, err := config.NewConfig()
-	fmt.Printf("(%%v)  %v\n", config)
+	cfgAr, err := config.NewConfig()
+	fmt.Printf("(%%v)  %v\n", cfgAr)
 	if err != nil {
 		logger.ErrorS("get config failed")
 		exitWithError(logger, err)
 	}
-	rotator := rotator.NewRotator(config, logger)
-	// fmt.Printf("exclude: %v\n", libs.Args.Excludes)
-	// fmt.Printf("src: %v\n", libs.Args.Src)
-	// fmt.Printf("dest: %v\n", libs.Args.Dest)
+	for _, config := range cfgAr {
+		rotator := rotator.NewRotator(config, logger)
 
-	time, err := getDate()
-	if err != nil {
-		logger.ErrorS("get date error")
-		exitWithError(logger, err)
-	}
-	_, sErr := os.Stat(config.Src)
-	if os.IsNotExist(sErr) {
-		logger.ErrorS("src does not exist")
-		exitWithError(logger, sErr)
-	}
+		time, err := getDate()
+		if err != nil {
+			logger.ErrorS("get date error")
+			exitWithError(logger, err)
+		}
+		_, sErr := os.Stat(config.Src)
+		if os.IsNotExist(sErr) {
+			logger.ErrorS("src does not exist")
+			exitWithError(logger, sErr)
+		}
 
-	if err = makeDestDir(config); err != nil {
-		exitWithError(logger, err)
-	}
-	//fmt.Printf("src: %p", &libs.Args.Src)
-	buf := new(bytes.Buffer)
-	tar := archives.NewTar(buf, time, config, logger)
-	if err := tar.Add(buf); err != nil {
-		exitWithError(logger, err)
-	}
+		if err = makeDestDir(config); err != nil {
+			exitWithError(logger, err)
+		}
+		//fmt.Printf("src: %p", &libs.Args.Src)
+		buf := new(bytes.Buffer)
+		tar := archives.NewTar(buf, time, config, logger)
+		if err := tar.Add(buf); err != nil {
+			exitWithError(logger, err)
+		}
 
-	if err := tar.Create(); err != nil {
-		exitWithError(logger, err)
+		if err := tar.Create(); err != nil {
+			exitWithError(logger, err)
+		}
+		rotator.Run()
 	}
-	// act.Run -> base._run(act) -> base.find(act) -> act._find
-	// act.Run -> base._runのときにactを渡すことでinterfaceを満たしている
-	rotator.Run()
 	os.Exit(OK)
 }

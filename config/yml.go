@@ -4,6 +4,10 @@ import (
 	yml "github.com/wawakakakyakya/configloader/yml"
 )
 
+type YamlConfigs struct {
+	Cfgs []YamlConfig `yaml:"lists"`
+}
+
 type YamlConfig struct {
 	Excludes    []string `yaml:"excludes"`
 	Src         string   `yaml:"src"`
@@ -14,20 +18,22 @@ type YamlConfig struct {
 
 // var c := Config{Exclude: "", Src: "", Dest: "", Rotate: "", IsRecursive: ""}
 
-func LoadYamlConfig(path string) (*Config, error) {
+func LoadYamlConfig(path string) (ConfigArray, error) {
 
-	yc := YamlConfig{}
-	err := yml.Load(path, &yc)
+	ycArray := YamlConfigs{}
+	err := yml.Load(path, &ycArray)
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("(%%v)  %v\n", c)
-	c := &Config{}
-	c.Excludes = yc.Excludes
-	c.Dest = yc.Dest
-	c.Src = yc.Src
-	c.Rotate = yc.Rotate
-	c.IsRecursive = yc.IsRecursive
-
-	return c, nil
+	var cfgArray = ConfigArray{}
+	for _, yc := range ycArray.Cfgs {
+		c := &Config{}
+		c.Excludes = yc.Excludes
+		c.Dest = yc.Dest
+		c.Src = yc.Src
+		c.Rotate = yc.Rotate
+		c.IsRecursive = yc.IsRecursive
+		cfgArray = append(cfgArray, c)
+	}
+	return cfgArray, nil
 }

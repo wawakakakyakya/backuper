@@ -2,6 +2,8 @@ package config
 
 import "path/filepath"
 
+type ConfigArray []*Config
+
 type Config struct {
 	// Excludes    *ArrayFlags
 	Excludes    []string
@@ -26,13 +28,17 @@ func mutate(config *Config) error {
 	return nil
 }
 
-func NewConfig() (*Config, error) {
-	c, err := LoadYamlConfig(configPath)
+func NewConfig() (ConfigArray, error) {
+	cfgAr, err := LoadYamlConfig(configPath)
 	if err != nil {
 		return nil, err
 	}
-	if err := mutate(c); err != nil {
-		return nil, err
+
+	for _, c := range cfgAr {
+		if err := mutate(c); err != nil {
+			return nil, err
+		}
 	}
-	return c, nil
+
+	return cfgAr, nil
 }
