@@ -8,12 +8,14 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 )
 
 var (
 	OK = 0
 	NG = 1
+	wg sync.WaitGroup
 )
 
 func getDate() (string, error) {
@@ -42,6 +44,45 @@ func exitWithError(logger logger.LoggerInterface, err error) {
 	os.Exit(NG)
 }
 
+func do(l logger.LoggerInterface, c *config.Config, errCh chan<- error) {
+	defer wg.Done()
+	time, err := getDate()
+	if err != nil {
+		l.ErrorS("get date error")
+		errCh <- err
+		return
+	}
+	_, sErr := os.Stat(c.Src)
+	if os.IsNotExist(sErr) {
+		l.ErrorS("src does not exist")
+		errCh <- err
+		return
+	}
+
+	if err = makeDestDir(c); err != nil {
+		errCh <- err
+		return
+	}
+	//fmt.Printf("src: %p", &libs.Args.Src)
+	buf := new(bytes.Buffer)
+	tar := archives.NewTar(buf, time, c, l)
+	if err := tar.Add(buf); err != nil {
+		l.ErrorS("tar.Add failed")
+		errCh <- err
+		return
+	}
+
+	if err := tar.Create(); err != nil {
+		l.ErrorS("tar.Create failed")
+		errCh <- err
+		return
+	}
+	rotator := rotator.NewRotator(c, l)
+	rotator.Run()
+	l.Info("wg decrement")
+
+}
+
 func main() {
 	logger := logger.NewLogger()
 	logger.Info("start main")
@@ -51,34 +92,26 @@ func main() {
 		logger.ErrorS("get config failed")
 		exitWithError(logger, err)
 	}
+	errCh := make(chan error, len(cfgAr))
+	defer close(errCh)
 	for _, config := range cfgAr {
-		rotator := rotator.NewRotator(config, logger)
-
-		time, err := getDate()
-		if err != nil {
-			logger.ErrorS("get date error")
-			exitWithError(logger, err)
-		}
-		_, sErr := os.Stat(config.Src)
-		if os.IsNotExist(sErr) {
-			logger.ErrorS("src does not exist")
-			exitWithError(logger, sErr)
-		}
-
-		if err = makeDestDir(config); err != nil {
-			exitWithError(logger, err)
-		}
-		//fmt.Printf("src: %p", &libs.Args.Src)
-		buf := new(bytes.Buffer)
-		tar := archives.NewTar(buf, time, config, logger)
-		if err := tar.Add(buf); err != nil {
-			exitWithError(logger, err)
-		}
-
-		if err := tar.Create(); err != nil {
-			exitWithError(logger, err)
-		}
-		rotator.Run()
+		wg.Add(1)
+		logger.Info("wg add")
+		go do(logger, config, errCh)
 	}
+
+	wg.Wait()
+	select {
+	case err, closed := <-errCh:
+		if !closed {
+			fmt.Printf("Value %s was read.\n", err.Error())
+		} else {
+			fmt.Println("Channel closed!")
+		}
+	default:
+		fmt.Println("No value ready, moving on.")
+	}
+
+	logger.Info("task was ended")
 	os.Exit(OK)
 }
