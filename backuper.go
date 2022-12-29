@@ -57,7 +57,7 @@ func main() {
 	// fmt.Printf("src: %v\n", libs.Args.Src)
 	// fmt.Printf("dest: %v\n", libs.Args.Dest)
 
-	today, err := getDate()
+	time, err := getDate()
 	if err != nil {
 		logger.ErrorS("get date error")
 		exitWithError(logger, err)
@@ -73,7 +73,7 @@ func main() {
 	}
 	//fmt.Printf("src: %p", &libs.Args.Src)
 	buf := new(bytes.Buffer)
-	tar := archives.NewTar(buf, today, config, logger)
+	tar := archives.NewTar(buf, time, config, logger)
 	if err := tar.Add(buf); err != nil {
 		exitWithError(logger, err)
 	}

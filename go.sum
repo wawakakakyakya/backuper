@@ -1,3 +1,5 @@
+github.com/wawakakakyakya/configloader v0.0.0-20221224051153-af4d8546ce2c h1:nTovfZ0POTrf6fzI/7e/JtrZO3Bn0PuaZveDvhFzYC8=
+github.com/wawakakakyakya/configloader v0.0.0-20221224051153-af4d8546ce2c/go.mod h1:K90cUzOc8FQg2ZxycxK1lYrz1SnHH09KRQ40Vgyg35Y=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
